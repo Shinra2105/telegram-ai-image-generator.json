@@ -1,0 +1,774 @@
+{
+  "name": "testing 1",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "stabilityApiUrl",
+              "value": "<__PLACEHOLDER_VALUE__Stability AI API endpoint URL__>",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "stabilityApiKey",
+              "value": "<__PLACEHOLDER_VALUE__Stability AI API key__>",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "emailRecipient",
+              "value": "<__PLACEHOLDER_VALUE__Email recipient address__>",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "smsRecipient",
+              "value": "<__PLACEHOLDER_VALUE__SMS recipient phone number__>",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "77a644f6-c7f0-4fc3-a919-ab18b1a56df4",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -880,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -880,
+        1200
+      ],
+      "id": "ce965460-8078-41b9-b2ae-a8ef616e6487",
+      "name": "Telegram Trigger",
+      "webhookId": "5ed035fd-a8bb-4840-a4d2-a52c5c68abda",
+      "credentials": {
+        "telegramApi": {
+          "id": "RJMJIudBAQaPwv8g",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.photo.reduce((prev, current) => (prev.width > current.width) ? prev : current).file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -656,
+        1200
+      ],
+      "id": "deb00f63-32b2-4893-8abb-fa4cf8848e31",
+      "name": "Get a file",
+      "webhookId": "07e85eee-b71b-4d3a-b8f6-61f8b0ed5c76",
+      "credentials": {
+        "telegramApi": {
+          "id": "RJMJIudBAQaPwv8g",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "Recibido! 📸 Ahora selecciona el estilo para tu caricatura:",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🍩 Simpson",
+                    "additionalFields": {
+                      "callback_data": "simpson",
+                      "url": "={{ $execution.resumeUrl }}/respuesta?estilo=simpson"
+                    }
+                  },
+                  {
+                    "text": "Lego",
+                    "additionalFields": {
+                      "callback_data": "lego",
+                      "url": "={{ $execution.resumeUrl }}/respuesta?estilo=lego"
+                    }
+                  },
+                  {
+                    "text": "⚔️ Espartano",
+                    "additionalFields": {
+                      "callback_data": "espartano",
+                      "url": "={{ $execution.resumeUrl }}/respuesta?estilo=espartano"
+                    }
+                  },
+                  {
+                    "text": "🚲 Stranger Things",
+                    "additionalFields": {
+                      "callback_data": "stranger",
+                      "url": "={{ $execution.resumeUrl }}/respuesta?estilo=stranger"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -208,
+        1104
+      ],
+      "id": "3d33d31d-5e64-42e9-959b-a4f6179e6895",
+      "name": "Send a text message",
+      "webhookId": "d6da0810-fd6e-4882-8809-c0fd0aec3676",
+      "credentials": {
+        "telegramApi": {
+          "id": "RJMJIudBAQaPwv8g",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "responseMode": "responseNode",
+        "options": {
+          "webhookSuffix": "respuesta"
+        }
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        16,
+        1104
+      ],
+      "id": "907374e5-9d12-456f-87eb-02ced891508d",
+      "name": "Wait",
+      "webhookId": "a30bea8c-bd45-4fbb-9864-315e4e55a312"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "¡Procesando!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -880,
+        432
+      ],
+      "id": "48682bcc-e53c-4790-b398-1758f5712f41",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        448,
+        1200
+      ],
+      "id": "ea640c7e-efba-422e-bb9b-d36ce8719140",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "resize",
+        "width": 1024,
+        "height": 1024,
+        "resizeOption": "ignoreAspectRatio",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.editImage",
+      "typeVersion": 1,
+      "position": [
+        16,
+        1296
+      ],
+      "id": "677a6efb-d755-4929-9f66-dbdd5e66c8cf",
+      "name": "Edit Image"
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {
+          "caption": "SU IMAGEN FUE GENERADA CORRECTAMENTE"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2016,
+        1200
+      ],
+      "id": "21a87446-192e-43a4-8521-3f05018e6188",
+      "name": "Send a photo message",
+      "webhookId": "e00cb447-4454-4a93-afd8-d7c7db15c286",
+      "credentials": {
+        "telegramApi": {
+          "id": "RJMJIudBAQaPwv8g",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "beef1562-0cef-424a-ab19-2434afd4892f",
+              "name": "prompt_final",
+              "value": "={{\n$json.query.estilo == 'simpson' ? \"Transform the person in the image into a The Simpsons character. Yellow skin, matt groening style, flat colors, thick outlines, cartoon, high quality\" :\n$json.query.estilo == 'dibujo' ? \"Transform the person into a rough charcoal sketch on white paper, artistic, high contrast, pencil drawing\" :\n$json.query.estilo == 'neon' ? \"Cyberpunk style portrait, neon blue and pink lighting, futuristic city background, cinematic, 8k\" :\n\"High quality portrait\"\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1088,
+        416
+      ],
+      "id": "12a2e472-329d-4b30-bf00-0b6b972dffaf",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "Actúa como un analista de biometría facial para animación. Genera una descripción física en INGLÉS de la persona en la imagen.\n\nInstrucciones CRÍTICAS de análisis:\n1. **Vello Facial (BINARIO):** Ignora la sombra de barba ligera o el \"micro-stubble\". Si no hay una barba definida, DEBES escribir: \"CLEAN SHAVEN, smooth skin around mouth and chin\". Si hay barba real, descríbela.\n2. **Ropa:** Describe explícitamente el color y tipo de la prenda superior (Ej: \"Black hooded sweatshirt\").\n3. **Rasgos y Pelo:** Describe la forma de la cara, nariz, ojos y la textura/estilo exacto del cabello.\n4. **Expresión/Mirada:** Describe la dirección de la mirada y la emoción.\n\nSalida: Un solo párrafo descriptivo técnico en inglés.\nAnaliza y describe en un solo párrafo denso:\n\n1. **DINÁMICA FACIAL (CRÍTICO):**\n   - **Dirección de la Mirada:** ¿Hacia dónde miran exactamente las pupilas? (Ej: \"Direct gaze into lens\", \"Looking off-camera to the left\").\n   - **Expresión:** Describe la emoción y el estado de la boca (Ej: \"Neutral serious mouth\", \"Wide smile revealing upper teeth\", \"Slight smirk\").\n   - **Ángulo:** (Ej: \"Frontal view\", \"Three-quarter profile\").\n\n2. **TOPOLOGÍA Y RASGOS:**\n   - Forma del cráneo, mandíbula y pómulos.\n   - Forma exacta de la nariz y labios.\n   - Ojos: Forma (almendrados, encapotados) y color.\n\n3. **MAPA CAPILAR:**\n   - Cabello: Textura técnica (Ej: \"Type 3B tight curls\", \"Straight fine hair\"), línea de nacimiento y corte.\n   - **Vello Facial (DETECCIÓN ESTRICTA):** Escanea el mentón. Si es piel limpia, escribe \"CLEAN SHAVEN SKIN\". Si hay sombra, \"MICRO-STUBBLE\". Si hay barba, describe la forma.\n\n4. **ROPA:** Describe el tipo de prenda, color y escote.\n\nSalida: Un párrafo descriptivo técnico en inglés.",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        208
+      ],
+      "id": "30725209-7d51-42ca-81ee-352e8c73ac3f",
+      "name": "Analyze an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JApLaRYaUT8MAS6f",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1792,
+        1200
+      ],
+      "id": "24717c1e-f71d-4808-856d-c028bc9202c7",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.replicate.com/v1/models/google/nano-banana/predictions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "wait"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n{\n  \"input\": {\n    // PROMPT: Lee la variable limpia que creamos en el nodo Code\n    \"prompt\": $json.prompt_final,\n    \n    // IMAGEN: Lee la URL limpia y es ARRAY (tal como pide el modelo en tu ejemplo cURL)\n    \"image_input\": [ $json.image_url_cleaned ],\n    \n    // Parámetros por defecto (se pueden ajustar si el modelo los acepta, pero mejor simplificarlos)\n    \"num_inference_steps\": 30\n  }\n}\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1568,
+        1200
+      ],
+      "id": "23cccc8b-d9d9-4dd1-bcf8-e77ef070808e",
+      "name": "HTTP Request3",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "hzTVUvexFO4OXQEh",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "path": "=/img_{{ $execution.id }}.png",
+        "binaryData": true
+      },
+      "type": "n8n-nodes-base.dropbox",
+      "typeVersion": 1,
+      "position": [
+        672,
+        1200
+      ],
+      "id": "e6678dba-cf13-4541-932d-4a638bd7a72c",
+      "name": "Upload a file",
+      "credentials": {
+        "dropboxOAuth2Api": {
+          "id": "9zMBJdYsnaeuSL43",
+          "name": "Dropbox account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Definición de Nodos\nconst DROPLINK_NODE = 'enlace'; \nconst WAIT_NODE = 'Wait';             \nconst WEBHOOK_NODE = 'Webhook';       \nconst GEMINI_NODE = 'Analyze an image';\nconst NANO_VERSION = 'a2288278f33d37748b094149219067e238c74209938621222263467034296435'; \n\ntry {\n    // --- 1. DETECCIÓN DE ESTILO (Lógica Simplificada) ---\n    let estilo = null;\n\n    // Intento 1: ¿Viene de la WEB?\n    try {\n        const webhookItems = $items(WEBHOOK_NODE);\n        if (webhookItems.length > 0 && webhookItems[0].json.body && webhookItems[0].json.body.estilo) {\n            estilo = webhookItems[0].json.body.estilo;\n        }\n    } catch (e) {}\n\n    // Intento 2: ¿Viene de TELEGRAM? (Solo si no se encontró en Web)\n    if (!estilo) {\n        try {\n            const waitItems = $items(WAIT_NODE);\n            if (waitItems.length > 0 && waitItems[0].json.query && waitItems[0].json.query.estilo) {\n                estilo = waitItems[0].json.query.estilo;\n            }\n        } catch (e) {}\n    }\n    \n    // Fallback final si todo falla\n    if (!estilo) estilo = 'dibujo';\n\n\n    // --- 2. RECUPERAR DESCRIPCIÓN DE GEMINI ---\n    let descriptionClean = \"a person looking at the camera\"; \n    try {\n        const geminiItems = $items(GEMINI_NODE);\n        if (geminiItems.length > 0 && geminiItems[0].json.content) {\n             descriptionClean = geminiItems[0].json.content.parts[0].text.replace(/(\\r\\n|\\n|\\r)/gm, \" \");\n        }\n    } catch (e) {}\n\n    // --- 3. RECUPERAR URL DE DROPBOX ---\n    const dropboxItems = $items(DROPLINK_NODE);\n    if (dropboxItems.length === 0) throw new Error(\"Link Creator ('enlace') no corrió.\");\n    \n    const dropboxOutput = dropboxItems[0].json;\n    const rawUrl = dropboxOutput.url || (dropboxOutput.links && dropboxOutput.links[0] ? dropboxOutput.links[0].url : null);\n\n    if (!rawUrl) throw new Error(\"Dropbox no devolvió URL.\");\n    const cleanLink = rawUrl.replace(\"www.dropbox.com\", \"dl.dropboxusercontent.com\").replace(\"?dl=0\", \"\");\n\n\n    // --- 4. LÓGICA DE ESTILOS (Comparación Estricta) ---\n    let promptStyle = \"\";\n    let promptPrefix = \"A character portrait of \"; \n\n    // Normalizamos a minúsculas para evitar errores de tipeo\n    const estiloKey = estilo.toLowerCase().trim();\n\n    if (estiloKey === 'simpson') {\n        promptStyle = \"VISUAL STYLE: Vintage 90s The Simpsons TV aesthetic. Yellow skin #FFD90F. Flat 2D coloring, thick shaky black outlines, no shading. Matt Groening style. CRITICAL: Keep the exact facial expression.\";\n    \n    } else if (estiloKey === 'lego') {\n        promptPrefix = \"A macro photography shot of a LEGO minifigure resembling \";\n        promptStyle = \"VISUAL STYLE: 3D Lego render. Glossy plastic texture, blocky articulation, c-shaped hands. High quality studio lighting, octane render. The face features are painted on the plastic cylinder head.\";\n    \n    } else if (estiloKey === 'stranger') {\n        promptPrefix = \"An official movie poster-style illustration of the subject as a character from Stranger Things, \";\n        promptStyle = \"VISUAL STYLE: Hyper-detailed 1980s dark fantasy digital painting, official Stranger Things poster aesthetic. The background is The Upside Down with glowing red lightning. Intense chiaroscuro lighting in deep reds and blues, heavy film grain.\";\n    \n    } else if (estiloKey === 'espartano') {\n        promptPrefix = \"An epic cinematic shot of a Spartan warrior, \";\n        promptStyle = \"VISUAL STYLE: Movie '300' aesthetic. Wearing a weathered bronze Corinthian helmet pushed back to reveal face, red cape, holding a spear. Intense contrast, desaturated colors with high contrast gold and crimson, sweaty skin, battlefield background.\";\n    \n    } else {\n        // Default: Dibujo\n        promptStyle = \"VISUAL STYLE: Rough charcoal pencil sketch on white paper, artistic, high contrast.\";\n    }\n\n    const finalPrompt = `${promptPrefix} ${descriptionClean}. ${promptStyle}. Preserve identity.`;\n\n    // --- 5. RETORNO ---\n    return [{\n        json: {\n            prompt_final: finalPrompt,\n            image_url_cleaned: cleanLink,\n            nano_version: NANO_VERSION,\n            debug_estilo_detectado: estiloKey // Para depurar si vuelve a fallar\n        },\n        binary: $input.item.binary \n    }];\n\n} catch (e) {\n    throw new Error(`ERROR EN CODE NODE: ${e.message}`);\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        1200
+      ],
+      "id": "0e0f3469-f467-4562-92e7-8d95b173b7b7",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "dropboxApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"path\": \"{{ $json.path_lower }}\",\n    \"settings\": {\n        \"requested_visibility\": \"public\"\n    }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1120,
+        1200
+      ],
+      "id": "e18bc009-0b15-4850-8b34-4324d011e2e0",
+      "name": "enlace",
+      "credentials": {
+        "dropboxOAuth2Api": {
+          "id": "9zMBJdYsnaeuSL43",
+          "name": "Dropbox account"
+        },
+        "dropboxApi": {
+          "id": "xQCou062Ki9NEilG",
+          "name": "Dropbox account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "delete",
+        "path": "={{ $('Upload a file').item.json.path_lower }}"
+      },
+      "type": "n8n-nodes-base.dropbox",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        1200
+      ],
+      "id": "217e118a-dcab-43f2-8ad1-9511c9714518",
+      "name": "Delete a file",
+      "credentials": {
+        "dropboxOAuth2Api": {
+          "id": "9zMBJdYsnaeuSL43",
+          "name": "Dropbox account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "Actúa como un sistema de escaneo biométrico avanzado y retratista. Tu objetivo es generar una descripción física en INGLÉS para reconstruir la identidad del sujeto.\n\nAnaliza la imagen y describe de forma concisa y objetiva los siguientes puntos:\n1. **GÉNERO Y EDAD:** Género y edad aparente.\n2. **PEINADO Y TEXTURA:** Color, textura (curly, wavy, straight) y estilo de cabello.\n3. **CABEZA Y ACCESORIOS (VITAL):** ¿Lleva gorra, sombrero o casco? (Ej: \"Wearing a baseball cap\").\n4. **ESTADO DEL CABELLO:** - Si lleva gorra: ¿Se ve cabello saliendo por los lados/atrás? Si NO se ve cabello, escribe: \"**BALD/SHAVED under cap, no visible hair**.\n - Si no lleva gorra: Describe el cabello o calvicie.\n5. **MIRADA Y EXPRESIÓN (CRÍTICO):** Dirección de la mirada (Ej: \"Looking straight into camera lens\"), y descripción de la expresión (Ej: \"Wide smile showing all teeth\" o \"Serious neutral expression\").\n6. **RASGOS FACIALES:** Forma del rostro, nariz, y accesorios (gafas, lentes, etc.).\n7. **VELLO FACIAL (ESTRICTO):** Si la piel está limpia, escribe **\"CLEAN SHAVEN\"**. Si hay barba, descríbela.\n8. **ATUENDO:** Describe la prenda superior y accesorios visibles (lanyard, collar, etc.).\n9.**CUIDADO** Si es mujer NO DEBE TENER BARBA JAMAS\nResponde ÚNICAMENTE con la descripción física y de pose, separada por comas, sin introducciones ni frases complejas.",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        1104
+      ],
+      "id": "fa384e7f-7f2b-4eb0-968d-6ac4c6f835e4",
+      "name": "Analyze an image1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JApLaRYaUT8MAS6f",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 20
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        1200
+      ],
+      "id": "49f8ce09-b9a7-491e-bac1-8952556fe8b7",
+      "name": "Wait1",
+      "webhookId": "1c7e4568-91e6-4898-a03f-615b8c7ce96d"
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $('Send a text message').item.json.result.chat.id }}",
+        "messageId": "={{ $('Send a text message').item.json.result.message_id }}",
+        "text": "=🎨 ¡Excelente elección! Estoy pintando tu caricatura estilo {{ $json.query.estilo }}. Dame unos segundos...",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        1104
+      ],
+      "id": "c5e1e2bd-1cf7-42c6-81fa-7261814df33a",
+      "name": "Edit a text message",
+      "webhookId": "f28ae5eb-7b96-40d2-9b79-ed0ee07a5862",
+      "credentials": {
+        "telegramApi": {
+          "id": "RJMJIudBAQaPwv8g",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Telegram Trigger": [
+      {
+        "json": {
+          "update_id": 771463043,
+          "message": {
+            "message_id": 369,
+            "from": {
+              "id": 1172081251,
+              "is_bot": false,
+              "first_name": "Gabriel",
+              "username": "Gaboalejo21",
+              "language_code": "es"
+            },
+            "chat": {
+              "id": 1172081251,
+              "first_name": "Gabriel",
+              "username": "Gaboalejo21",
+              "type": "private"
+            },
+            "date": 1764595035,
+            "photo": [
+              {
+                "file_id": "AgACAgEAAxkBAAIBcWktlVuoVf4RWje0U1_UqfJFnc_gAAItC2sbjdtoRapr6O7b7oubAQADAgADcwADNgQ",
+                "file_unique_id": "AQADLQtrG43baEV4",
+                "file_size": 1088,
+                "width": 51,
+                "height": 90
+              },
+              {
+                "file_id": "AgACAgEAAxkBAAIBcWktlVuoVf4RWje0U1_UqfJFnc_gAAItC2sbjdtoRapr6O7b7oubAQADAgADbQADNgQ",
+                "file_unique_id": "AQADLQtrG43baEVy",
+                "file_size": 11413,
+                "width": 180,
+                "height": 320
+              },
+              {
+                "file_id": "AgACAgEAAxkBAAIBcWktlVuoVf4RWje0U1_UqfJFnc_gAAItC2sbjdtoRapr6O7b7oubAQADAgADeAADNgQ",
+                "file_unique_id": "AQADLQtrG43baEV9",
+                "file_size": 41344,
+                "width": 450,
+                "height": 800
+              },
+              {
+                "file_id": "AgACAgEAAxkBAAIBcWktlVuoVf4RWje0U1_UqfJFnc_gAAItC2sbjdtoRapr6O7b7oubAQADAgADeQADNgQ",
+                "file_unique_id": "AQADLQtrG43baEV-",
+                "file_size": 61351,
+                "width": 720,
+                "height": 1280
+              }
+            ]
+          }
+        },
+        "binary": {
+          "data": {
+            "mimeType": "image/jpeg",
+            "fileType": "image",
+            "fileExtension": "jpg",
+            "data": "filesystem-v2",
+            "fileName": "file_110.jpg",
+            "id": "filesystem-v2:workflows/Feuw0H19F4iUf3r8/executions/406/binary_data/2dae5fb8-fe53-47fb-99c4-e857797a0398",
+            "fileSize": "41.3 kB"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Workflow Configuration": {
+      "main": [
+        []
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Edit Image",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Analyze an image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Edit a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Upload a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Image": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        []
+      ]
+    },
+    "Analyze an image": {
+      "main": [
+        []
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Send a photo message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a file": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enlace": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a photo message": {
+      "main": [
+        [
+          {
+            "node": "Delete a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze an image1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "enlace",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit a text message": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1934b6a0-4dcb-45f0-a305-2ca1273b6ded",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "98112b24ced8988cb2fd718962b8814e8d7ed34efe92f8302f3e8fd60a3df789"
+  },
+  "id": "Feuw0H19F4iUf3r8",
+  "tags": []
+}
